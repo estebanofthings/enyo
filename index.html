@@ -19,8 +19,8 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #000; /* Black background */
-            color: #fff; /* White text */
+            background-color: #000;
+            color: #fff;
         }
 
         header {
@@ -61,43 +61,52 @@
             display: block;
             width: 80px;
             height: 3px;
-            background-color: #fff; /* White line */
+            background-color: #fff;
             margin: 10px auto;
         }
 
-        /* Carousel Styles */
+        /* Improved Carousel Styles */
         .carousel {
             position: relative;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             margin-bottom: 50px;
+            height: 60vh;
+            border-radius: 10px;
         }
 
         .carousel-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             transition: transform 0.5s ease-in-out;
-            width: calc(100% * 3); /* Total width for three images */
         }
 
         .carousel-item {
-            flex: 1;
-            display: flex; /* Align items */
-            justify-content: center; /* Center items */
-            align-items: center; /* Center items */
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .carousel img {
             width: 100%;
-            border-radius: 10px;
-            max-height: 400px; /* Limit height of images */
-            object-fit: cover; /* Maintain aspect ratio */
-            transition: transform 0.5s ease-in-out; /* Zoom effect */
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
         }
 
         .carousel-item.active img {
-            transform: scale(1.1); /* Zoom in on active item */
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .carousel-item:not(.active) img {
+            opacity: 0.5;
         }
 
         .carousel-controls {
@@ -113,28 +122,45 @@
             background-color: rgba(255, 255, 255, 0.3);
             border: none;
             border-radius: 50%;
-            padding: 10px;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            color: #fff;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .carousel-button:hover {
             background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
         }
 
-        /* Video Section */
+        /* Improved Video Section */
         .video-section {
             margin: 50px 0;
             text-align: center;
         }
 
-        .video-section iframe {
-            width: 100%;
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
             max-width: 800px;
-            height: 450px; /* Fixed height for videos */
-            border: none;
+            margin: 0 auto 20px;
             border-radius: 10px;
-            margin-bottom: 20px; /* Space between videos */
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         footer {
@@ -166,7 +192,7 @@
     <section class="portfolio">
         <h2 class="section-title">My Work</h2>
         
-        <!-- Carousel -->
+        <!-- Improved Carousel -->
         <div class="carousel">
             <div class="carousel-inner" id="carouselInner">
                 <div class="carousel-item active">
@@ -199,9 +225,15 @@
 
         <div class="video-section">
             <h2 class="section-title">Videos</h2>
-            <iframe src="https://www.youtube.com/embed/kCxtYhHG_Vc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            <iframe src="https://www.youtube.com/embed/mUsQFezLC8c" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            <iframe src="https://www.youtube.com/embed/xkzxEoGZ5YE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/kCxtYhHG_Vc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/mUsQFezLC8c" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/xkzxEoGZ5YE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
 
     </section>
@@ -216,16 +248,6 @@
         const totalItems = items.length;
         let currentIndex = 0;
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % totalItems;
-            updateCarousel();
-        });
-
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-            updateCarousel();
-        });
-
         function updateCarousel() {
             items.forEach((item, index) => {
                 item.classList.remove('active');
@@ -233,9 +255,44 @@
                     item.classList.add('active');
                 }
             });
-            const offset = -currentIndex * (100 / 3); // Move by 100% of the middle image
+            const offset = -currentIndex * 100;
             carouselInner.style.transform = `translateX(${offset}%)`;
         }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+            updateCarousel();
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        // Auto-play functionality
+        let intervalId = setInterval(nextSlide, 5000);
+
+        // Pause auto-play on hover
+        carouselInner.addEventListener('mouseenter', () => {
+            clearInterval(intervalId);
+        });
+
+        // Resume auto-play on mouse leave
+        carouselInner.addEventListener('mouseleave', () => {
+            intervalId = setInterval(nextSlide, 5000);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
+            }
+        });
     </script>
 
 </body>
