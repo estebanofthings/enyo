@@ -68,7 +68,7 @@
         }
 
         .carousel-item img,
-        .carousel-item video {
+        .carousel-item .video-container {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -168,6 +168,22 @@
             cursor: pointer;
         }
 
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 177.778%;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         footer {
             text-align: center;
             padding: 20px;
@@ -205,25 +221,22 @@
                     <img src="https://i.ibb.co/HC1249H/5.jpg" alt="Image 3">
                 </div>
                 <div class="carousel-item">
-                    <video src="https://streamable.com/l2h9zt" muted>
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="play-button"></div>
+                    <div class="video-container">
+                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/l2h9zt?"></iframe>
+                    </div>
                 </div>
                 <div class="carousel-item">
                     <img src="https://i.ibb.co/f9ZmWX7/3.jpg" alt="Image 5">
                 </div>
                 <div class="carousel-item">
-                    <video src="https://streamable.com/cr97g4" muted>
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="play-button"></div>
+                    <div class="video-container">
+                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/cr97g4?"></iframe>
+                    </div>
                 </div>
                 <div class="carousel-item">
-                    <video src="https://streamable.com/dvk31c" muted>
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="play-button"></div>
+                    <div class="video-container">
+                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/dvk31c?"></iframe>
+                    </div>
                 </div>
             </div>
             <div class="carousel-controls">
@@ -236,9 +249,9 @@
         <div id="mediaModal" class="modal">
             <span class="close">&times;</span>
             <img class="modal-content" id="modalImage" style="display:none;">
-            <video class="modal-content" id="modalVideo" controls style="display:none;">
-                Your browser does not support the video tag.
-            </video>
+            <div class="modal-content video-container" id="modalVideo" style="display:none;">
+                <iframe allow="fullscreen" allowfullscreen></iframe>
+            </div>
         </div>
 
     </section>
@@ -257,6 +270,7 @@
         const modal = document.getElementById('mediaModal');
         const modalImg = document.getElementById('modalImage');
         const modalVideo = document.getElementById('modalVideo');
+        const modalIframe = modalVideo.querySelector('iframe');
         const closeBtn = document.getElementsByClassName('close')[0];
 
         function setupCarousel() {
@@ -337,16 +351,16 @@
         }
 
         function openModal(item) {
-            const media = item.querySelector('img, video');
+            const media = item.querySelector('img, .video-container');
             if (media.tagName === 'IMG') {
                 modalImg.src = media.src;
                 modalImg.style.display = 'block';
                 modalVideo.style.display = 'none';
-            } else if (media.tagName === 'VIDEO') {
-                modalVideo.src = media.src;
+            } else if (media.classList.contains('video-container')) {
+                const iframe = media.querySelector('iframe');
+                modalIframe.src = iframe.src;
                 modalVideo.style.display = 'block';
                 modalImg.style.display = 'none';
-                modalVideo.play();
             }
             modal.style.display = 'flex';
         }
@@ -365,8 +379,7 @@
 
         function closeModal() {
             modal.style.display = 'none';
-            modalVideo.pause();
-            modalVideo.currentTime = 0;
+            modalIframe.src = '';
         }
 
         document.getElementById('nextBtn').addEventListener('click', nextSlide);
