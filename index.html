@@ -346,7 +346,7 @@
                 modalVideo.style.display = 'none';
             } else {
                 const iframe = modalVideo.querySelector('iframe');
-                iframe.src = `${currentItem.src}&autoplay=1`;
+                iframe.src = `${currentItem.src}?autoplay=1`;
                 modalVideo.style.display = 'block';
                 modalImg.style.display = 'none';
             }
