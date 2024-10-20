@@ -69,36 +69,36 @@
         .carousel {
             position: relative;
             overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
         }
 
         .carousel-inner {
             display: flex;
             transition: transform 0.5s ease-in-out;
-            width: 100%;
+            width: calc(100% * 3); /* Total width for three images */
         }
 
         .carousel-item {
-            min-width: 100%;
-            transition: opacity 0.5s ease-in-out;
+            flex: 1;
+            transition: transform 0.5s ease-in-out;
             display: flex; /* Align items */
             justify-content: center; /* Center items */
             align-items: center; /* Center items */
-            flex-direction: column; /* Stack items */
         }
 
         .carousel img {
             width: 100%;
             border-radius: 10px;
-            max-height: 500px; /* Limit height of images */
+            max-height: 400px; /* Limit height of images */
             object-fit: cover; /* Maintain aspect ratio */
+            transition: transform 0.5s ease-in-out; /* Zoom effect */
         }
 
-        .carousel video {
-            width: 100%;
-            border-radius: 10px;
-            max-height: 500px; /* Limit height of videos */
+        .carousel-item.active img {
+            transform: scale(1.1); /* Zoom in on active item */
         }
 
         .carousel-controls {
@@ -121,6 +121,20 @@
 
         .carousel-button:hover {
             background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Video Section */
+        .video-section {
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .video-section iframe {
+            width: 100%;
+            max-width: 800px;
+            height: 450px; /* Fixed height for videos */
+            border: none;
+            border-radius: 10px;
         }
 
         footer {
@@ -155,8 +169,7 @@
         <!-- Carousel -->
         <div class="carousel">
             <div class="carousel-inner" id="carouselInner">
-                <!-- Image Items -->
-                <div class="carousel-item">
+                <div class="carousel-item active">
                     <img src="https://i.ibb.co/BC1tFyB/7.jpg" alt="Image 1">
                 </div>
                 <div class="carousel-item">
@@ -177,30 +190,18 @@
                 <div class="carousel-item">
                     <img src="https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg" alt="Image 7">
                 </div>
-                <!-- Video Items -->
-                <div class="carousel-item">
-                    <video controls>
-                        <source src="https://youtube.com/shorts/kCxtYhHG_Vc?si=Yg1QTBLO6A4X-vmz" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div class="carousel-item">
-                    <video controls>
-                        <source src="https://youtube.com/shorts/mUsQFezLC8c?si=R0DcQtzZdo7C7k7v" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div class="carousel-item">
-                    <video controls>
-                        <source src="https://youtube.com/shorts/xkzxEoGZ5YE?si=9q00_ly5iiDoL2op" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
             </div>
             <div class="carousel-controls">
                 <button class="carousel-button" id="prevBtn">&#10094;</button>
                 <button class="carousel-button" id="nextBtn">&#10095;</button>
             </div>
+        </div>
+
+        <div class="video-section">
+            <h2 class="section-title">Videos</h2>
+            <iframe src="https://www.youtube.com/embed/kCxtYhHG_Vc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/mUsQFezLC8c" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/xkzxEoGZ5YE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
 
     </section>
@@ -226,7 +227,13 @@
         });
 
         function updateCarousel() {
-            const offset = -currentIndex * 100;
+            items.forEach((item, index) => {
+                item.classList.remove('active');
+                if (index === currentIndex) {
+                    item.classList.add('active');
+                }
+            });
+            const offset = -currentIndex * (100 / 3); // Move by 100% of the middle image
             carouselInner.style.transform = `translateX(${offset}%)`;
         }
     </script>
