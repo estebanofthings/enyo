@@ -85,12 +85,13 @@
         }
 
         .carousel-item {
-            min-width: 100%;
+            min-width: calc(100% / 3);
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            transition: transform 0.5s ease-in-out;
         }
 
         .carousel img {
@@ -100,13 +101,14 @@
             transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
         }
 
-        .carousel-item.active img {
-            transform: scale(1.1);
-            opacity: 1;
+        .carousel-item.prev,
+        .carousel-item.next {
+            transform: scale(0.8);
         }
 
-        .carousel-item:not(.active) img {
-            opacity: 0.5;
+        .carousel-item.active {
+            transform: scale(1.2);
+            z-index: 1;
         }
 
         .carousel-controls {
@@ -116,6 +118,7 @@
             display: flex;
             justify-content: space-between;
             transform: translateY(-50%);
+            z-index: 2;
         }
 
         .carousel-button {
@@ -138,7 +141,7 @@
             transform: scale(1.1);
         }
 
-        /* Improved Video Section */
+        /* Video Section */
         .video-section {
             margin: 50px 0;
             text-align: center;
@@ -195,7 +198,7 @@
         <!-- Improved Carousel -->
         <div class="carousel">
             <div class="carousel-inner" id="carouselInner">
-                <div class="carousel-item active">
+                <div class="carousel-item">
                     <img src="https://i.ibb.co/BC1tFyB/7.jpg" alt="Image 1">
                 </div>
                 <div class="carousel-item">
@@ -248,25 +251,66 @@
         const totalItems = items.length;
         let currentIndex = 0;
 
+        function setupCarousel() {
+            // Clone the first two items and append them to the end
+            const firstClone = items[0].cloneNode(true);
+            const secondClone = items[1].cloneNode(true);
+            carouselInner.appendChild(firstClone);
+            carouselInner.appendChild(secondClone);
+
+            // Clone the last two items and prepend them to the beginning
+            const lastClone = items[totalItems - 1].cloneNode(true);
+            const secondLastClone = items[totalItems - 2].cloneNode(true);
+            carouselInner.insertBefore(lastClone, items[0]);
+            carouselInner.insertBefore(secondLastClone, lastClone);
+
+            updateCarousel();
+        }
+
         function updateCarousel() {
-            items.forEach((item, index) => {
-                item.classList.remove('active');
-                if (index === currentIndex) {
+            const newItems = document.querySelectorAll('.carousel-item');
+            newItems.forEach((item, index) => {
+                item.classList.remove('active', 'prev', 'next');
+                if (index === currentIndex + 2) {
                     item.classList.add('active');
+                } else if (index === currentIndex + 1) {
+                    item.classList.add('prev');
+                } else if (index === currentIndex + 3) {
+                    item.classList.add('next');
                 }
             });
-            const offset = -currentIndex * 100;
+            const offset = -(currentIndex + 1) * (100 / 3);
             carouselInner.style.transform = `translateX(${offset}%)`;
         }
 
         function nextSlide() {
-            currentIndex = (currentIndex + 1) % totalItems;
-            updateCarousel();
+            currentIndex++;
+            if (currentIndex >= totalItems) {
+                currentIndex = 0;
+                carouselInner.style.transition = 'none';
+                carouselInner.style.transform = `translateX(-${100 / 3}%)`;
+                setTimeout(() => {
+                    carouselInner.style.transition = 'transform 0.5s ease-in-out';
+                    updateCarousel();
+                }, 50);
+            } else {
+                updateCarousel();
+            }
         }
 
         function prevSlide() {
-            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-            updateCarousel();
+            currentIndex--;
+            if (currentIndex < -1) {
+                currentIndex = totalItems - 1;
+                carouselInner.style.transition = 'none';
+                carouselInner.style.transform = `translateX(-${(totalItems + 1) * (100 / 3)}%)`;
+                setTimeout(() => {
+                    carouselInner.style.transition = 'transform 0.5s ease-in-out';
+                    updateCarousel();
+                }, 50);
+            } else {
+                updateCarousel();
+            }
         }
 
         document.getElementById('nextBtn').addEventListener('click', nextSlide);
@@ -293,6 +337,9 @@
                 nextSlide();
             }
         });
+
+        // Initialize the carousel
+        setupCarousel();
     </script>
 
 </body>
