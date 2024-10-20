@@ -155,7 +155,6 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.8);
-            display: flex;
             justify-content: center;
             align-items: center;
         }
@@ -359,36 +358,48 @@
 
         function setupItemClickListeners() {
             const allItems = document.querySelectorAll('.carousel-item');
-            allItems.forEach(item => {
+            allItems.forEach((item, index) => {
                 item.addEventListener('click', function() {
-                    const media = this.querySelector('img, video');
-                    if (media.tagName === 'IMG') {
-                        modalImg.src = media.src;
-                        modalImg.style.display = 'block';
-                        modalVideo.style.display = 'none';
-                    } else if (media.tagName === 'VIDEO') {
-                        modalVideo.src = media.src;
-                        modalVideo.style.display = 'block';
-                        modalImg.style.display = 'none';
-                        modalVideo.play();
+                    const itemIndex = (index - 2 + totalItems) % totalItems;
+                    if (itemIndex === currentIndex - 1 || itemIndex === currentIndex + 1) {
+                        currentIndex = itemIndex;
+                        updateCarousel();
                     }
-                    modal.style.display = 'flex';
+                    openModal(this);
                 });
             });
         }
 
+        function openModal(item) {
+            const media = item.querySelector('img, video');
+            if (media.tagName === 'IMG') {
+                modalImg.src = media.src;
+                modalImg.style.display = 'block';
+                modalVideo.style.display = 'none';
+            } else if (media.tagName === 'VIDEO') {
+                modalVideo.src = media.src;
+                modalVideo.style.display = 'block';
+                modalImg.style.display = 'none';
+            }
+            modal.style.display = 'flex';
+        }
+
         // Close the modal
         closeBtn.onclick = function() {
-            modal.style.display = 'none';
-            modalVideo.pause();
+            closeModal();
         }
 
         // Close the modal when clicking outside the image/video
         window.onclick = function(event) {
             if (event.target == modal) {
-                modal.style.display = 'none';
-                modalVideo.pause();
+                closeModal();
             }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            modalVideo.pause();
+            modalVideo.currentTime = 0;
         }
 
         document.getElementById('nextBtn').addEventListener('click', nextSlide);
@@ -414,8 +425,7 @@
             } else if (e.key === 'ArrowRight') {
                 nextSlide();
             } else if (e.key === 'Escape' && modal.style.display === 'flex') {
-                modal.style.display = 'none';
-                modalVideo.pause();
+                closeModal();
             }
         });
 
