@@ -241,7 +241,7 @@
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'video-container';
                 const iframe = document.createElement('iframe');
-                iframe.src = `${item.src}?autoplay=1`;
+                iframe.src = `${item.src}`;
                 iframe.allowFullscreen = true;
                 videoContainer.appendChild(iframe);
                 div.appendChild(videoContainer);
