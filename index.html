@@ -7,7 +7,7 @@
     <title>Enyo</title>
     
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <style>
@@ -18,7 +18,7 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: #000;
             color: #fff;
         }
@@ -31,9 +31,11 @@
         }
 
         .main-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
             margin-left: 20px;
+            letter-spacing: 1rem;
+            font-weight: 300;
         }
 
         .nav-links {
@@ -45,8 +47,11 @@
         .nav-links a {
             color: #fff;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 300;
             transition: color 0.3s;
+            font-size: 0.9rem;
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
         }
 
         .nav-links a:hover {
@@ -70,18 +75,19 @@
 
         .carousel-inner {
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             height: 100%;
         }
 
         .carousel-item {
-            min-width: 100%;
+            min-width: calc(100% / 3);
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             cursor: pointer;
+            padding: 0 10px;
         }
 
         .carousel-item img,
@@ -89,6 +95,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-item:hover img,
+        .carousel-item:hover .video-container {
+            transform: scale(1.05);
         }
 
         .carousel-controls {
@@ -131,7 +144,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
         }
@@ -180,13 +193,12 @@
         footer {
             text-align: center;
             padding: 20px;
-            background-color: #222;
+            background-color: #111;
             color: #fff;
             margin-top: 50px;
-        }
-
-        footer p {
-            font-size: 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1rem;
         }
 
         footer a {
@@ -194,12 +206,32 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                min-width: 100%;
+            }
+
+            .main-title {
+                font-size: 2rem;
+                letter-spacing: 0.5rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .nav-links a {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <h1 class="main-title">Enyo</h1>
+        <h1 class="main-title">E N Y O</h1>
         <nav class="nav-links">
             <a href="mailto:your-email@example.com">Contact</a>
             <a href="https://www.instagram.com/your-instagram-handle/" target="_blank">Instagram</a>
@@ -256,7 +288,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2024 Enyo | Built with <a href="https://www.netlify.com/">Netlify</a></p>
+        <p>&copy; 2024 E N Y O | Built with <a href="https://www.netlify.com/">Netlify</a></p>
     </footer>
 
     <script>
@@ -271,9 +303,10 @@
         const modalVideo = document.getElementById('modalVideo');
         const closeModal = document.querySelector('.close');
 
-        // Show current item
-        function showCurrentItem() {
-            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        // Show current items
+        function showCurrentItems() {
+            const itemWidth = 100 / 3;
+            carouselInner.style.transform = `translateX(-${currentIndex * itemWidth}%)`;
         }
 
         function showModal(index) {
@@ -299,12 +332,12 @@
 
         document.getElementById('prevBtn').addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-            showCurrentItem();
+            showCurrentItems();
         });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % totalItems;
-            showCurrentItem();
+            showCurrentItems();
         });
 
         items.forEach((item, index) => {
@@ -318,7 +351,44 @@
             }
         });
 
-        showCurrentItem(); // Initialize carousel
+        // Handle touch events for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carouselInner.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        carouselInner.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX) {
+                // Swipe left
+                currentIndex = (currentIndex + 1) % totalItems;
+            }
+            if (touchEndX > touchStartX) {
+                // Swipe right
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+            }
+            showCurrentItems();
+        }
+
+        // Adjust carousel for mobile
+        function adjustCarousel() {
+            if (window.innerWidth <= 768) {
+                items.forEach(item => item.style.minWidth = '100%');
+            } else {
+                items.forEach(item => item.style.minWidth = 'calc(100% / 3)');
+            }
+            showCurrentItems();
+        }
+
+        window.addEventListener('resize', adjustCarousel);
+        adjustCarousel(); // Initial adjustment
+        showCurrentItems(); // Initialize carousel
     </script>
 </body>
 </html>
