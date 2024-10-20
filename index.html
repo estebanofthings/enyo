@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -224,8 +225,6 @@
             { type: 'video', src: 'https://streamable.com/e/dvk31c' }
         ];
 
-
-        
         let currentIndex = 0;
 
         function createCarouselItem(item) {
@@ -241,7 +240,7 @@
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'video-container';
                 const iframe = document.createElement('iframe');
-                iframe.src = `${item.src}`;
+                iframe.src = `${item.src}&autoplay=0`;
                 iframe.allowFullscreen = true;
                 videoContainer.appendChild(iframe);
                 div.appendChild(videoContainer);
