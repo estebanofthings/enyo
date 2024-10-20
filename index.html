@@ -281,14 +281,13 @@
             { type: 'image', src: 'https://i.ibb.co/BC1tFyB/7.jpg', alt: 'Image 1' },
             { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 2' },
             { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 3' },
-            { type: 'image', src: 'https://i.ibb.co/hBdnxg7/2.jpg', alt: 'Image 4' },
-            { type: 'image', src: 'https://i.ibb.co/bQy7WVL/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 5' },
-            { type: 'image', src: 'https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 6' },
-            { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
+            { type: 'video', src: 'https://streamable.com/e/l2h9zt' },
+            { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 5' },
             { type: 'video', src: 'https://streamable.com/e/cr97g4' },
-            { type: 'video', src: 'https://streamable.com/e/dvk31c' },
-            { type: 'video', src: 'https://streamable.com/e/l2h9zt' }
+            { type: 'video', src: 'https://streamable.com/e/dvk31c' }
         ];
+
+        let currentIndex = 0;
 
         function createCarouselItem(item) {
             const div = document.createElement('div');
