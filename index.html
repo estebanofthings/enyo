@@ -155,24 +155,11 @@
             cursor: pointer;
         }
 
-        .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 0;
-            height: 0;
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-left: 30px solid rgba(255,255,255,0.8);
-            cursor: pointer;
-        }
-
         .video-container {
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 177.778%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
         }
 
         .video-container iframe {
@@ -222,7 +209,7 @@
                 </div>
                 <div class="carousel-item">
                     <div class="video-container">
-                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/l2h9zt?"></iframe>
+                        <iframe allow="fullscreen" src="https://streamable.com/e/l2h9zt"></iframe>
                     </div>
                 </div>
                 <div class="carousel-item">
@@ -230,12 +217,12 @@
                 </div>
                 <div class="carousel-item">
                     <div class="video-container">
-                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/cr97g4?"></iframe>
+                        <iframe allow="fullscreen" src="https://streamable.com/e/cr97g4"></iframe>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="video-container">
-                        <iframe allow="fullscreen" allowfullscreen src="https://streamable.com/e/dvk31c?"></iframe>
+                        <iframe allow="fullscreen" src="https://streamable.com/e/dvk31c"></iframe>
                     </div>
                 </div>
             </div>
@@ -250,7 +237,7 @@
             <span class="close">&times;</span>
             <img class="modal-content" id="modalImage" style="display:none;">
             <div class="modal-content video-container" id="modalVideo" style="display:none;">
-                <iframe allow="fullscreen" allowfullscreen></iframe>
+                <iframe allow="fullscreen"></iframe>
             </div>
         </div>
 
@@ -296,122 +283,61 @@
                 item.classList.remove('active', 'prev', 'next');
                 if (index === currentIndex + 2) {
                     item.classList.add('active');
-                } else if (index === currentIndex + 1) {
-                    item.classList.add('prev');
-                } else if (index === currentIndex + 3) {
+                } else if (index === currentIndex + 1 || (currentIndex === newItems.length - 3 && index === 0)) {
                     item.classList.add('next');
+                } else if (index === currentIndex || (currentIndex === 0 && index === newItems.length - 1)) {
+                    item.classList.add('prev');
                 }
             });
-            const offset = -(currentIndex + 1) * (100 / 3);
-            carouselInner.style.transform = `translateX(${offset}%)`;
-        }
-
-        function nextSlide() {
-            currentIndex++;
-            if (currentIndex >= totalItems) {
-                currentIndex = 0;
-                carouselInner.style.transition = 'none';
-                carouselInner.style.transform = `translateX(-${100 / 3}%)`;
-                setTimeout(() => {
-                    carouselInner.style.transition = 'transform 0.5s ease-in-out';
-                    updateCarousel();
-                }, 50);
-            } else {
-                updateCarousel();
-            }
-        }
-
-        function prevSlide() {
-            currentIndex--;
-            if (currentIndex < -1) {
-                currentIndex = totalItems - 1;
-                carouselInner.style.transition = 'none';
-                carouselInner.style.transform = `translateX(-${(totalItems + 1) * (100 / 3)}%)`;
-                setTimeout(() => {
-                    carouselInner.style.transition = 'transform 0.5s ease-in-out';
-                    updateCarousel();
-                }, 50);
-            } else {
-                updateCarousel();
-            }
         }
 
         function setupItemClickListeners() {
-            const allItems = document.querySelectorAll('.carousel-item');
-            allItems.forEach((item, index) => {
-                item.addEventListener('click', function() {
-                    const itemIndex = (index - 2 + totalItems) % totalItems;
-                    if (itemIndex === currentIndex - 1 || itemIndex === currentIndex + 1) {
-                        currentIndex = itemIndex;
-                        updateCarousel();
+            const mediaItems = document.querySelectorAll('.carousel-item');
+
+            mediaItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    if (item.querySelector('img')) {
+                        showImage(item.querySelector('img').src);
+                    } else if (item.querySelector('.video-container')) {
+                        showVideo(item.querySelector('iframe').src);
                     }
-                    openModal(this);
                 });
             });
         }
 
-        function openModal(item) {
-            const media = item.querySelector('img, .video-container');
-            if (media.tagName === 'IMG') {
-                modalImg.src = media.src;
-                modalImg.style.display = 'block';
-                modalVideo.style.display = 'none';
-            } else if (media.classList.contains('video-container')) {
-                const iframe = media.querySelector('iframe');
-                modalIframe.src = iframe.src;
-                modalVideo.style.display = 'block';
-                modalImg.style.display = 'none';
-            }
-            modal.style.display = 'flex';
+        function showImage(src) {
+            modal.style.display = "flex";
+            modalImg.src = src;
+            modalImg.style.display = "block";
+            modalVideo.style.display = "none";
         }
 
-        // Close the modal
+        function showVideo(src) {
+            modal.style.display = "flex";
+            modalVideo.style.display = "block";
+            modalImg.style.display = "none";
+            modalIframe.src = src;
+        }
+
+        // Navigation buttons
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalItems - 1;
+            updateCarousel();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex < totalItems - 1) ? currentIndex + 1 : 0;
+            updateCarousel();
+        });
+
         closeBtn.onclick = function() {
-            closeModal();
+            modal.style.display = "none";
+            modalImg.src = "";
+            modalIframe.src = "";
         }
 
-        // Close the modal when clicking outside the image/video
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
-            modalIframe.src = '';
-        }
-
-        document.getElementById('nextBtn').addEventListener('click', nextSlide);
-        document.getElementById('prevBtn').addEventListener('click', prevSlide);
-
-        // Auto-play functionality
-        let intervalId = setInterval(nextSlide, 5000);
-
-        // Pause auto-play on hover
-        carouselInner.addEventListener('mouseenter', () => {
-            clearInterval(intervalId);
-        });
-
-        // Resume auto-play on mouse leave
-        carouselInner.addEventListener('mouseleave', () => {
-            intervalId = setInterval(nextSlide, 5000);
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                prevSlide();
-            } else if (e.key === 'ArrowRight') {
-                nextSlide();
-            } else if (e.key === 'Escape' && modal.style.display === 'flex') {
-                closeModal();
-            }
-        });
-
-        // Initialize the carousel
+        // Setup the carousel
         setupCarousel();
     </script>
-
 </body>
 </html>
