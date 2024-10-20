@@ -287,129 +287,69 @@
             { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
             { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
             { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
-            { type: 'video', src: 'https://streamable.com/e/l2h9zt' },
-            { type: 'video', src: 'https://streamable.com/e/cr97g4' },
-            { type: 'video', src: 'https://streamable.com/e/dvk31c' }
+            { type: 'video', src: 'https://www.youtube.com/embed/TYdCl38gE0Y', title: 'Video 1' },
+            { type: 'video', src: 'https://www.youtube.com/embed/TYdCl38gE0Y', title: 'Video 2' }
         ];
 
         let currentIndex = 0;
-        let isMobile = window.innerWidth <= 768;
 
-        function createCarouselItem(item) {
-            const div = document.createElement('div');
-            div.className = 'carousel-item';
+        function showCarouselItem(index) {
+            const item = carouselItems[index];
+            carouselInner.innerHTML = ''; // Clear previous items
+
+            const carouselItem = document.createElement('div');
+            carouselItem.classList.add('carousel-item');
 
             if (item.type === 'image') {
                 const img = document.createElement('img');
                 img.src = item.src;
                 img.alt = item.alt;
-                div.appendChild(img);
+                img.addEventListener('click', () => openModal(item.src, 'image'));
+                carouselItem.appendChild(img);
             } else if (item.type === 'video') {
                 const videoContainer = document.createElement('div');
-                videoContainer.className = 'video-container';
+                videoContainer.classList.add('video-container');
                 const iframe = document.createElement('iframe');
-                iframe.src = `${item.src}?autoplay=0`;
-                iframe.frameBorder = '0';
-                iframe.allowFullscreen = true;
+                iframe.src = item.src;
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.setAttribute('allowfullscreen', '');
                 videoContainer.appendChild(iframe);
-                div.appendChild(videoContainer);
+                videoContainer.addEventListener('click', () => openModal(item.src, 'video'));
+                carouselItem.appendChild(videoContainer);
             }
 
-            return div;
+            carouselInner.appendChild(carouselItem);
         }
 
-        function initializeCarousel() {
-            carouselItems.forEach(item => {
-                carouselInner.appendChild(createCarouselItem(item));
-            });
-            showCurrentItems();
-        }
-
-        function showCurrentItems() {
-            carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
-        }
-
-        function showModal(index) {
-            const currentItem = carouselItems[index];
-            if (currentItem.type === 'image') {
-                modalImg.src = currentItem.src;
+        function openModal(src, type) {
+            if (type === 'image') {
+                modalImg.src = src;
                 modalImg.style.display = 'block';
                 modalVideo.style.display = 'none';
-            } else {
-                const embedCode = `<iframe src="${currentItem.src}?autoplay=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay"></iframe>`;
-                modalVideo.innerHTML = embedCode;
+            } else if (type === 'video') {
+                modalVideo.innerHTML = `<iframe src="${src}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 modalVideo.style.display = 'block';
                 modalImg.style.display = 'none';
             }
             modal.style.display = 'flex';
         }
 
-        function hideModal() {
+        closeModal.onclick = function() {
             modal.style.display = 'none';
-            modalImg.src = '';
-            modalVideo.innerHTML = '';
+            modalVideo.innerHTML = ''; // Clear video on close
         }
 
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
-            showCurrentItems();
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
+        document.getElementById('nextBtn').onclick = function() {
             currentIndex = (currentIndex + 1) % carouselItems.length;
-            showCurrentItems();
-        });
-
-        carouselInner.addEventListener('click', (e) => {
-            const clickedItem = e.target.closest('.carousel-item');
-            if (clickedItem) {
-                const index = Array.from(carouselInner.children).indexOf(clickedItem);
-                showModal(index);
-            }
-        });
-
-        closeModal.addEventListener('click', hideModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                hideModal();
-            }
-        });
-
-        // Handle touch events for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        carouselInner.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-
-        carouselInner.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-
-        function handleSwipe() {
-            if (touchEndX < touchStartX) {
-                // Swipe left
-                currentIndex = (currentIndex + 1) % carouselItems.length;
-            }
-            if (touchEndX > touchStartX) {
-                // Swipe right
-                currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
-            }
-            showCurrentItems();
+            showCarouselItem(currentIndex);
         }
 
-        // Adjust carousel for mobile
-        function adjustCarousel() {
-            isMobile = window.innerWidth <= 768;
-            showCurrentItems();
+        document.getElementById('prevBtn').onclick = function() {
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            showCarouselItem(currentIndex);
         }
 
-        window.addEventListener('resize', adjustCarousel);
-        initializeCarousel();
-        adjustCarousel();
+        showCarouselItem(currentIndex);
     </script>
 </body>
 </html>
