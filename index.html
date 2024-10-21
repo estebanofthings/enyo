@@ -65,6 +65,7 @@
         }
 
         /* Carousel Styles */
+
         .carousel {
             position: relative;
             overflow: hidden;
@@ -75,12 +76,12 @@
 
         .carousel-inner {
             display: flex;
-            transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             height: 100%;
+            transition: transform 0.5s ease;
         }
 
         .carousel-item {
-            min-width: calc(100% / 3);
+            flex: 0 0 calc(100% / 3);
             height: 100%;
             display: flex;
             justify-content: center;
@@ -98,6 +99,7 @@
             border-radius: 5px;
             transition: transform 0.3s ease;
         }
+        
         
         @media (min-width: 768px) {
             .header {
@@ -276,201 +278,189 @@
     <footer>
         <p>&copy; 2024 E N Y O | Built with <a href="https://www.netlify.com/">Netlify</a></p>
     </footer>
-
-<script>
-    const carouselInner = document.getElementById('carouselInner');
-    const modal = document.getElementById('mediaModal');
-    const modalImg = document.getElementById('modalImage');
-    const modalVideo = document.getElementById('modalVideo');
-    const closeModal = document.querySelector('.close');
-
-    const carouselItems = [
-        { type: 'image', src: 'https://i.ibb.co/BC1tFyB/7.jpg', alt: 'Image 1' },
-        { type: 'image', src: 'https://i.ibb.co/71sh3mH/4.jpg', alt: 'Image 2' },
-        { type: 'image', src: 'https://i.ibb.co/hBdnxg7/2.jpg', alt: 'Image 3' },
-        { type: 'image', src: 'https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 4' },
-        { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
-        { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
-        { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
-        { type: 'video', src: 'https://streamable.com/e/l2h9zt' },
-        { type: 'video', src: 'https://streamable.com/e/cr97g4' },
-        { type: 'video', src: 'https://streamable.com/e/dvk31c' }
-    ];
-
-    let currentIndex = 0;
-
-    function createCarouselItem(item) {
-        const div = document.createElement('div');
-        div.className = 'carousel-item';
-
-        if (item.type === 'image') {
-            const img = document.createElement('img');
-            img.src = item.src;
-            img.alt = item.alt;
-            div.appendChild(img);
-        } else if (item.type === 'video') {
-            const videoContainer = document.createElement('div');
-            videoContainer.className = 'video-container';
-            const iframe = document.createElement('iframe');
-            iframe.src = item.src;
-            iframe.frameBorder = '0';
-            iframe.allowFullscreen = true;
-            videoContainer.appendChild(iframe);
-            div.appendChild(videoContainer);
-        }
-
-        return div;
-    }
-
-    function initializeCarousel() {
-        // Clear existing items
-        carouselInner.innerHTML = '';
-        
-        // Add a full set of items, then the first two again
-        for (let i = 0; i < carouselItems.length + 2; i++) {
-            carouselInner.appendChild(createCarouselItem(carouselItems[i % carouselItems.length]));
-        }
-
-        // Set initial position
-        currentIndex = 1;
-        updateCarouselPosition(false);
-    }
-
-    function updateCarouselPosition(animate = true) {
-        const itemWidth = 100 / 3;
-        if (animate) {
-            carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-        } else {
-            carouselInner.style.transition = 'none';
-        }
-        carouselInner.style.transform = `translateX(-${currentIndex * itemWidth}%)`;
-    }
-
-    function moveCarousel(direction) {
-        currentIndex += direction;
-        updateCarouselPosition();
-
-        if (direction === 1 && currentIndex === carouselItems.length + 1) {
-            setTimeout(() => {
-                currentIndex = 1;
-                updateCarouselPosition(false);
-            }, 500);
-        } else if (direction === -1 && currentIndex === 0) {
-            setTimeout(() => {
-                currentIndex = carouselItems.length;
-                updateCarouselPosition(false);
-            }, 500);
-        }
-    }
-
-    document.getElementById('prevBtn').addEventListener('click', () => moveCarousel(-1));
-    document.getElementById('nextBtn').addEventListener('click', () => moveCarousel(1));
-
-    function showModal(index) {
-        const currentItem = carouselItems[index];
-        if (currentItem.type === 'image') {
-            modalImg.src = currentItem.src;
-            modalImg.style.display = 'block';
-            modalVideo.style.display = 'none';
-        } else {
-            const iframe = modalVideo.querySelector('iframe');
-            iframe.src = `${currentItem.src}?autoplay=1`;
-            modalVideo.style.display = 'block';
-            modalImg.style.display = 'none';
-        }
-        modal.style.display = 'flex';
-    }
-
-    function hideModal() {
-        modal.style.display = 'none';
-        modalImg.src = '';
-        modalVideo.querySelector('iframe').src = '';
-    }
-
-    carouselInner.addEventListener('click', (e) => {
-        const clickedItem = e.target.closest('.carousel-item');
-        if (clickedItem) {
-            const index = Array.from(carouselInner.children).indexOf(clickedItem) - 1;
-            showModal(index % carouselItems.length);
-        }
-    });
-
-    closeModal.addEventListener('click', hideModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            hideModal();
-        }
-    });
-
-    // Adjust carousel for mobile
-    function adjustCarousel() {
-        const itemWidth = window.innerWidth <= 768 ? 100 : 100 / 3;
-        document.querySelectorAll('.carousel-item').forEach(item => {
-            item.style.minWidth = `${itemWidth}%`;
-        });
-        updateCarouselPosition(false);
-    }
-
-    // Handle touch events for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    carouselInner.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, false);
-
-    carouselInner.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, false);
-
-    function handleSwipe() {
-        if (touchEndX < touchStartX) {
-            // Swipe left
-            moveCarousel(1);
-        }
-        if (touchEndX > touchStartX) {
-            // Swipe right
-            moveCarousel(-1);
-        }
-    }
-
-    window.addEventListener('resize', adjustCarousel);
     
-    // Initialize the carousel
-    initializeCarousel();
-    adjustCarousel();
+<script>
+  const carouselInner = document.getElementById('carouselInner');
+        const modal = document.getElementById('mediaModal');
+        const modalImg = document.getElementById('modalImage');
+        const modalVideo = document.getElementById('modalVideo');
+        const closeModal = document.querySelector('.close');
 
-    // Auto-play functionality
-    let autoplayInterval;
+        const carouselItems = [
+            { type: 'image', src: 'https://i.ibb.co/BC1tFyB/7.jpg', alt: 'Image 1' },
+            { type: 'image', src: 'https://i.ibb.co/71sh3mH/4.jpg', alt: 'Image 2' },
+            { type: 'image', src: 'https://i.ibb.co/hBdnxg7/2.jpg', alt: 'Image 3' },
+            { type: 'image', src: 'https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 4' },
+            { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
+            { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
+            { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
+            { type: 'video', src: 'https://streamable.com/e/l2h9zt' },
+            { type: 'video', src: 'https://streamable.com/e/cr97g4' },
+            { type: 'video', src: 'https://streamable.com/e/dvk31c' }
+        ];
 
-    function startAutoplay() {
-        autoplayInterval = setInterval(() => {
-            moveCarousel(1);
-        }, 5000); // Change slide every 5 seconds
-    }
+        let currentIndex = 0;
 
-    function stopAutoplay() {
-        clearInterval(autoplayInterval);
-    }
+        function createCarouselItem(item, index) {
+            const div = document.createElement('div');
+            div.className = 'carousel-item';
+            div.dataset.index = index;
 
-    // Start autoplay when the page loads
-    startAutoplay();
+            if (item.type === 'image') {
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.alt;
+                div.appendChild(img);
+            } else if (item.type === 'video') {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+                const iframe = document.createElement('iframe');
+                iframe.src = item.src;
+                iframe.frameBorder = '0';
+                iframe.allowFullscreen = true;
+                videoContainer.appendChild(iframe);
+                div.appendChild(videoContainer);
+            }
 
-    // Pause autoplay when user interacts with the carousel
-    carouselInner.addEventListener('mouseenter', stopAutoplay);
-    carouselInner.addEventListener('touchstart', stopAutoplay);
+            return div;
+        }
 
-    // Resume autoplay when user stops interacting
-    carouselInner.addEventListener('mouseleave', startAutoplay);
-    carouselInner.addEventListener('touchend', startAutoplay);
+        function initializeCarousel() {
+            carouselInner.innerHTML = '';
+            
+            // Add last item to the beginning
+            carouselInner.appendChild(createCarouselItem(carouselItems[carouselItems.length - 1], carouselItems.length - 1));
+            
+            // Add all items
+            carouselItems.forEach((item, index) => {
+                carouselInner.appendChild(createCarouselItem(item, index));
+            });
+            
+            // Add first item to the end
+            carouselInner.appendChild(createCarouselItem(carouselItems[0], 0));
 
-    // Additional event listeners for buttons to pause autoplay
-    document.getElementById('prevBtn').addEventListener('mouseenter', stopAutoplay);
-    document.getElementById('nextBtn').addEventListener('mouseenter', stopAutoplay);
-    document.getElementById('prevBtn').addEventListener('mouseleave', startAutoplay);
-    document.getElementById('nextBtn').addEventListener('mouseleave', startAutoplay);
-</script>
+            updateCarouselPosition(false);
+        }
 
+        function updateCarouselPosition(animate = true) {
+            const itemWidth = 100 / 3;
+            carouselInner.style.transition = animate ? 'transform 0.5s ease' : 'none';
+            carouselInner.style.transform = `translateX(-${(currentIndex + 1) * itemWidth}%)`;
+        }
+
+        function moveCarousel(direction) {
+            currentIndex += direction;
+            updateCarouselPosition();
+
+            if (direction === 1 && currentIndex === carouselItems.length) {
+                setTimeout(() => {
+                    currentIndex = 0;
+                    updateCarouselPosition(false);
+                }, 500);
+            } else if (direction === -1 && currentIndex === -1) {
+                setTimeout(() => {
+                    currentIndex = carouselItems.length - 1;
+                    updateCarouselPosition(false);
+                }, 500);
+            }
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => moveCarousel(-1));
+        document.getElementById('nextBtn').addEventListener('click', () => moveCarousel(1));
+
+        function showModal(index) {
+            const currentItem = carouselItems[index];
+            if (currentItem.type === 'image') {
+                modalImg.src = currentItem.src;
+                modalImg.style.display = 'block';
+                modalVideo.style.display = 'none';
+            } else {
+                const iframe = modalVideo.querySelector('iframe');
+                iframe.src = `${currentItem.src}?autoplay=1`;
+                modalVideo.style.display = 'block';
+                modalImg.style.display = 'none';
+            }
+            modal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+            modalImg.src = '';
+            modalVideo.querySelector('iframe').src = '';
+        }
+
+        carouselInner.addEventListener('click', (e) => {
+            const clickedItem = e.target.closest('.carousel-item');
+            if (clickedItem) {
+                const index = parseInt(clickedItem.dataset.index);
+                showModal(index);
+            }
+        });
+
+        closeModal.addEventListener('click', hideModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+
+        function adjustCarousel() {
+            const itemWidth = window.innerWidth <= 768 ? 100 : 100 / 3;
+            document.querySelectorAll('.carousel-item').forEach(item => {
+                item.style.flex = `0 0 ${itemWidth}%`;
+            });
+            updateCarouselPosition(false);
+        }
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carouselInner.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        carouselInner.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX) {
+                moveCarousel(1);
+            }
+            if (touchEndX > touchStartX) {
+                moveCarousel(-1);
+            }
+        }
+
+        window.addEventListener('resize', adjustCarousel);
+        
+        initializeCarousel();
+        adjustCarousel();
+
+        let autoplayInterval;
+
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                moveCarousel(1);
+            }, 5000);
+        }
+
+        function stopAutoplay() {
+            clearInterval(autoplayInterval);
+        }
+
+        startAutoplay();
+
+        carouselInner.addEventListener('mouseenter', stopAutoplay);
+        carouselInner.addEventListener('touchstart', stopAutoplay);
+        carouselInner.addEventListener('mouseleave', startAutoplay);
+        carouselInner.addEventListener('touchend', startAutoplay);
+
+        document.getElementById('prevBtn').addEventListener('mouseenter', stopAutoplay);
+        document.getElementById('nextBtn').addEventListener('mouseenter', stopAutoplay);
+        document.getElementById('prevBtn').addEventListener('mouseleave', startAutoplay);
+        document.getElementById('nextBtn').addEventListener('mouseleave', startAutoplay);
+    </script>
 </body>
 </html>
