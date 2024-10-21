@@ -28,6 +28,10 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
         }
 
         .main-title {
@@ -60,7 +64,7 @@
         .portfolio {
             max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 80px 0 20px;
         }
 
         /* Carousel Styles */
@@ -68,9 +72,8 @@
         .carousel {
             position: relative;
             overflow: hidden;
-            margin-bottom: 30px;
-            height: 50vh;
-            border-radius: 10px;
+            height: 100vh;
+            width: 100vw;
         }
 
         .carousel-inner {
@@ -86,7 +89,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            cursor: pointer;
         }
 
         .carousel-item img,
@@ -94,43 +96,29 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .carousel-item:hover img,
-        .carousel-item:hover .video-container {
-            transform: scale(1.05);
         }
 
         .carousel-controls {
             position: absolute;
-            top: 50%;
-            width: 100%;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            justify-content: space-between;
-            transform: translateY(-50%);
-            z-index: 2;
+            gap: 10px;
         }
 
         .carousel-button {
             background-color: rgba(255, 255, 255, 0.3);
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            color: #fff;
+            width: 12px;
+            height: 12px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            transition: background-color 0.3s;
         }
 
-        .carousel-button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.1);
+        .carousel-button.active {
+            background-color: #fff;
         }
 
         /* Modal Styles */
@@ -142,18 +130,16 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
             background-color: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            max-width: 90%;
-            max-height: 90%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 4px;
         }
 
         .close {
@@ -164,6 +150,7 @@
             font-size: 35px;
             font-weight: bold;
             transition: 0.3s;
+            z-index: 1001;
         }
 
         .close:hover,
@@ -176,8 +163,7 @@
         .video-container {
             position: relative;
             width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 100%;
         }
 
         .video-container iframe {
@@ -187,11 +173,6 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none;
-        }
-
-        .modal .video-container iframe {
-            pointer-events: auto;
         }
 
         footer {
@@ -199,7 +180,6 @@
             padding: 20px;
             background-color: #111;
             color: #fff;
-            margin-top: 30px;
             font-family: 'Cormorant Garamond', serif;
             font-size: 0.9rem;
             letter-spacing: 0.1rem;
@@ -215,6 +195,7 @@
             .header {
                 flex-direction: row;
                 justify-content: space-between;
+                padding: 20px 40px;
             }
 
             .main-title {
@@ -223,22 +204,41 @@
                 margin-bottom: 0;
             }
 
-            .carousel {
-                height: 60vh;
-            }
-
             .carousel-item {
                 flex: 0 0 calc(100% / 3);
+            }
+
+            .carousel-controls {
+                top: 50%;
+                bottom: auto;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+                justify-content: space-between;
+                padding: 0 20px;
             }
 
             .carousel-button {
                 width: 50px;
                 height: 50px;
                 font-size: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .carousel-button:first-child::before {
+                content: '\2039';
+                color: #fff;
+            }
+
+            .carousel-button:last-child::before {
+                content: '\203A';
+                color: #fff;
             }
 
             .portfolio {
-                padding: 50px 20px;
+                padding: 100px 40px 40px;
             }
         }
     </style>
@@ -259,9 +259,8 @@
             <div class="carousel-inner" id="carouselInner">
                 <!-- Carousel items will be dynamically added here -->
             </div>
-            <div class="carousel-controls">
-                <button class="carousel-button" id="prevBtn">&#10094;</button>
-                <button class="carousel-button" id="nextBtn">&#10095;</button>
+            <div class="carousel-controls" id="carouselControls">
+                <!-- Dot indicators will be dynamically added here -->
             </div>
         </div>
 
@@ -280,9 +279,9 @@
         <p>&copy; 2024 E N Y O | Built with <a href="https://www.netlify.com/">Netlify</a></p>
     </footer>
     
-
-<script>
-  const carouselInner = document.getElementById('carouselInner');
+    <script>
+        const carouselInner = document.getElementById('carouselInner');
+        const carouselControls = document.getElementById('carouselControls');
         const modal = document.getElementById('mediaModal');
         const modalImg = document.getElementById('modalImage');
         const modalVideo = document.getElementById('modalVideo');
@@ -324,51 +323,47 @@
                 div.appendChild(videoContainer);
             }
 
+            div.addEventListener('click', () => showModal(index));
+
             return div;
         }
 
         function initializeCarousel() {
             carouselInner.innerHTML = '';
+            carouselControls.innerHTML = '';
             
-            // Add last item to the beginning
-            carouselInner.appendChild(createCarouselItem(carouselItems[carouselItems.length - 1], carouselItems.length - 1));
-            
-            // Add all items
             carouselItems.forEach((item, index) => {
                 carouselInner.appendChild(createCarouselItem(item, index));
+                const dot = document.createElement('button');
+                dot.className = 'carousel-button';
+                dot.addEventListener('click', () => goToSlide(index));
+                carouselControls.appendChild(dot);
             });
-            
-            // Add first item to the end
-            carouselInner.appendChild(createCarouselItem(carouselItems[0], 0));
 
-            updateCarouselPosition(false);
+            updateCarouselPosition();
         }
 
-        function updateCarouselPosition(animate = true) {
-            const itemWidth = 100 / 3;
-            carouselInner.style.transition = animate ? 'transform 0.5s ease' : 'none';
-            carouselInner.style.transform = `translateX(-${(currentIndex + 1) * itemWidth}%)`;
+        function updateCarouselPosition() {
+            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateDotIndicators();
+        }
+
+        function updateDotIndicators() {
+            const dots = carouselControls.querySelectorAll('.carousel-button');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateCarouselPosition();
         }
 
         function moveCarousel(direction) {
-            currentIndex += direction;
+            currentIndex = (currentIndex + direction + carouselItems.length) % carouselItems.length;
             updateCarouselPosition();
-
-            if (direction === 1 && currentIndex === carouselItems.length) {
-                setTimeout(() => {
-                    currentIndex = 0;
-                    updateCarouselPosition(false);
-                }, 500);
-            } else if (direction === -1 && currentIndex === -1) {
-                setTimeout(() => {
-                    currentIndex = carouselItems.length - 1;
-                    updateCarouselPosition(false);
-                }, 500);
-            }
         }
-
-        document.getElementById('prevBtn').addEventListener('click', () => moveCarousel(-1));
-        document.getElementById('nextBtn').addEventListener('click', () => moveCarousel(1));
 
         function showModal(index) {
             const currentItem = carouselItems[index];
@@ -391,28 +386,12 @@
             modalVideo.querySelector('iframe').src = '';
         }
 
-        carouselInner.addEventListener('click', (e) => {
-            const clickedItem = e.target.closest('.carousel-item');
-            if (clickedItem) {
-                const index = parseInt(clickedItem.dataset.index);
-                showModal(index);
-            }
-        });
-
         closeModal.addEventListener('click', hideModal);
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 hideModal();
             }
         });
-
-        function adjustCarousel() {
-            const itemWidth = window.innerWidth <= 768 ? 100 : 100 / 3;
-            document.querySelectorAll('.carousel-item').forEach(item => {
-                item.style.flex = `0 0 ${itemWidth}%`;
-            });
-            updateCarouselPosition(false);
-        }
 
         let touchStartX = 0;
         let touchEndX = 0;
@@ -435,34 +414,13 @@
             }
         }
 
-        window.addEventListener('resize', adjustCarousel);
-        
         initializeCarousel();
-        adjustCarousel();
 
-        let autoplayInterval;
-
-        function startAutoplay() {
-            autoplayInterval = setInterval(() => {
-                moveCarousel(1);
-            }, 5000);
-        }
-
-        function stopAutoplay() {
-            clearInterval(autoplayInterval);
-        }
-
-        startAutoplay();
-
-        carouselInner.addEventListener('mouseenter', stopAutoplay);
-        carouselInner.addEventListener('touchstart', stopAutoplay);
-        carouselInner.addEventListener('mouseleave', startAutoplay);
-        carouselInner.addEventListener('touchend', startAutoplay);
-
-        document.getElementById('prevBtn').addEventListener('mouseenter', stopAutoplay);
-        document.getElementById('nextBtn').addEventListener('mouseenter', stopAutoplay);
-        document.getElementById('prevBtn').addEventListener('mouseleave', startAutoplay);
-        document.getElementById('nextBtn').addEventListener('mouseleave', startAutoplay);
+        // For desktop navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') moveCarousel(-1);
+            if (e.key === 'ArrowRight') moveCarousel(1);
+        });
     </script>
 </body>
 </html>
