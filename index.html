@@ -144,18 +144,16 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
             background-color: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 4px;
         }
 
         .close {
@@ -166,6 +164,7 @@
             font-size: 40px;
             font-weight: bold;
             transition: 0.3s;
+            z-index: 1001;
         }
 
         .close:hover,
@@ -178,8 +177,7 @@
         .video-container {
             position: relative;
             width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 100%;
             background-size: cover;
             background-position: center;
         }
@@ -256,17 +254,9 @@
                 font-size: 0.8rem;
             }
 
-            /* Fullscreen video on mobile */
             .modal-content.video-container {
                 width: 100%;
                 height: 100%;
-                max-height: none;
-                padding-bottom: 0;
-            }
-
-            .video-container iframe {
-                width: 100vw;
-                height: 100vh;
             }
 
             .close {
@@ -328,9 +318,9 @@
     { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
     { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
     { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
-    { type: 'video', src: 'https://streamable.com/e/l2h9zt', thumbnail: 'https://streamable.com/e/l2h9zt' },
-    { type: 'video', src: 'https://streamable.com/e/cr97g4', thumbnail: 'https://streamable.com/e/cr97g4' },
-    { type: 'video', src: 'https://streamable.com/e/dvk31c', thumbnail: 'https://streamable.com/e/dvk31c' }
+    { type: 'video', src: 'https://streamable.com/e/l2h9zt', thumbnail: 'https://i.imgur.com/FkVyznH.jpg' },
+    { type: 'video', src: 'https://streamable.com/e/cr97g4', thumbnail: 'https://i.imgur.com/qgvB1gJ.jpg' },
+    { type: 'video', src: 'https://streamable.com/e/dvk31c', thumbnail: 'https://i.imgur.com/wHY7j6y.jpg' }
   ];
 
   function createCarouselItem(item) {
@@ -376,13 +366,13 @@
     modal.style.display = 'flex';
 
     // Request fullscreen on mobile devices
-    if (window.innerWidth <= 768 && type === 'video') {
-      if (modalVideo.requestFullscreen) {
-        modalVideo.requestFullscreen();
-      } else if (modalVideo.webkitRequestFullscreen) { // Safari
-        modalVideo.webkitRequestFullscreen();
-      } else if (modalVideo.msRequestFullscreen) { // IE11
-        modalVideo.msRequestFullscreen();
+    if (window.innerWidth <= 768) {
+      if (modal.requestFullscreen) {
+        modal.requestFullscreen();
+      } else if (modal.webkitRequestFullscreen) { // Safari
+        modal.webkitRequestFullscreen();
+      } else if (modal.msRequestFullscreen) { // IE11
+        modal.msRequestFullscreen();
       }
     }
   }
@@ -392,16 +382,30 @@
     modalVideo.querySelector('iframe').src = '';
 
     // Exit fullscreen
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { // Safari
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) { // IE11
-      document.msExitFullscreen();
+    if (document.fullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { // Safari
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { // IE11
+        document.msExitFullscreen();
+      }
     }
   }
 
   closeModal.addEventListener('click', hideModal);
+
+  // Handle fullscreen change
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+  document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+  document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+  function handleFullscreenChange() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+      hideModal();
+    }
+  }
 
   // Carousel Navigation
   let currentIndex = 0;
