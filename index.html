@@ -323,27 +323,48 @@
     }
 
     function initializeCarousel() {
-        // Add clones for infinite effect
-        for (let i = carouselItems.length - 3; i < carouselItems.length; i++) {
-            carouselInner.appendChild(createCarouselItem(carouselItems[i]));
-        }
-        // Add main items
-        carouselItems.forEach(item => {
-            carouselInner.appendChild(createCarouselItem(item));
-        });
-        // Add more clones
-        for (let i = 0; i < 3; i++) {
-            carouselInner.appendChild(createCarouselItem(carouselItems[i]));
+        // Clear existing items
+        carouselInner.innerHTML = '';
+        
+        // Add a full set of items, then the first two again
+        for (let i = 0; i < carouselItems.length + 2; i++) {
+            carouselInner.appendChild(createCarouselItem(carouselItems[i % carouselItems.length]));
         }
 
-        showCurrentItems();
+        // Set initial position
+        currentIndex = 1;
+        updateCarouselPosition(false);
     }
 
-    function showCurrentItems() {
+    function updateCarouselPosition(animate = true) {
         const itemWidth = 100 / 3;
-        carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-        carouselInner.style.transform = `translateX(-${(currentIndex + 3) * itemWidth}%)`;
+        if (animate) {
+            carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
+        } else {
+            carouselInner.style.transition = 'none';
+        }
+        carouselInner.style.transform = `translateX(-${currentIndex * itemWidth}%)`;
     }
+
+    function moveCarousel(direction) {
+        currentIndex += direction;
+        updateCarouselPosition();
+
+        if (direction === 1 && currentIndex === carouselItems.length + 1) {
+            setTimeout(() => {
+                currentIndex = 1;
+                updateCarouselPosition(false);
+            }, 500);
+        } else if (direction === -1 && currentIndex === 0) {
+            setTimeout(() => {
+                currentIndex = carouselItems.length;
+                updateCarouselPosition(false);
+            }, 500);
+        }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => moveCarousel(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => moveCarousel(1));
 
     function showModal(index) {
         const currentItem = carouselItems[index];
@@ -366,33 +387,10 @@
         modalVideo.querySelector('iframe').src = '';
     }
 
-    function moveCarousel(direction) {
-        currentIndex += direction;
-        showCurrentItems();
-        handleInfiniteScroll();
-    }
-
-    document.getElementById('prevBtn').addEventListener('click', () => moveCarousel(-1));
-    document.getElementById('nextBtn').addEventListener('click', () => moveCarousel(1));
-
-    function handleInfiniteScroll() {
-        const totalItems = carouselItems.length;
-        if (currentIndex < 0 || currentIndex >= totalItems) {
-            setTimeout(() => {
-                carouselInner.style.transition = 'none';
-                currentIndex = (currentIndex + totalItems) % totalItems;
-                showCurrentItems();
-                setTimeout(() => {
-                    carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-                }, 50);
-            }, 500);
-        }
-    }
-
     carouselInner.addEventListener('click', (e) => {
         const clickedItem = e.target.closest('.carousel-item');
         if (clickedItem) {
-            const index = Array.from(carouselInner.children).indexOf(clickedItem) - 3;
+            const index = Array.from(carouselInner.children).indexOf(clickedItem) - 1;
             showModal(index % carouselItems.length);
         }
     });
@@ -410,7 +408,7 @@
         document.querySelectorAll('.carousel-item').forEach(item => {
             item.style.minWidth = `${itemWidth}%`;
         });
-        showCurrentItems();
+        updateCarouselPosition(false);
     }
 
     // Handle touch events for mobile
