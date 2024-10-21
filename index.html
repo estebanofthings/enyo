@@ -6,10 +6,8 @@
     <meta name="description" content="Enyo's Portfolio showcasing projects, images, and videos">
     <title>Enyo</title>
     
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
     <style>
         * {
             box-sizing: border-box;
@@ -21,59 +19,43 @@
             font-family: 'Montserrat', sans-serif;
             background-color: #000;
             color: #fff;
+            overflow-x: hidden;
         }
 
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            position: fixed;
-            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
         }
 
         .main-title {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             letter-spacing: 0.5rem;
             font-weight: 300;
-            margin-bottom: 15px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
         }
 
         .nav-links a {
             color: #fff;
             text-decoration: none;
-            font-weight: 300;
-            transition: color 0.3s;
+            margin-left: 20px;
             font-size: 0.9rem;
             letter-spacing: 0.1rem;
             text-transform: uppercase;
         }
 
-        .nav-links a:hover {
-            color: #bbb;
-        }
-
-        .portfolio {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 80px 0 20px;
-        }
-
-        /* Carousel Styles */
-
         .carousel {
             position: relative;
-            overflow: hidden;
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
         }
 
         .carousel-inner {
@@ -85,10 +67,6 @@
         .carousel-item {
             flex: 0 0 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
         }
 
         .carousel-item img,
@@ -96,68 +74,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .carousel-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-        }
-
-        .carousel-button {
-            background-color: rgba(255, 255, 255, 0.3);
-            border: none;
-            border-radius: 50%;
-            width: 12px;
-            height: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .carousel-button.active {
-            background-color: #fff;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            color: #f1f1f1;
-            font-size: 35px;
-            font-weight: bold;
-            transition: 0.3s;
-            z-index: 1001;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
         }
 
         .video-container {
@@ -175,76 +91,55 @@
             border: none;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #111;
-            color: #fff;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.9rem;
-            letter-spacing: 0.1rem;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
         }
 
-        footer a {
-            color: #fff;
-            text-decoration: none;
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #f1f1f1;
+            font-size: 35px;
             font-weight: bold;
+            cursor: pointer;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            font-size: 0.8rem;
         }
 
         @media (min-width: 768px) {
-            .header {
-                flex-direction: row;
-                justify-content: space-between;
-                padding: 20px 40px;
-            }
-
             .main-title {
                 font-size: 3rem;
                 letter-spacing: 1rem;
-                margin-bottom: 0;
-            }
-
-            .carousel-item {
-                flex: 0 0 calc(100% / 3);
-            }
-
-            .carousel-controls {
-                top: 50%;
-                bottom: auto;
-                left: 0;
-                right: 0;
-                transform: translateY(-50%);
-                justify-content: space-between;
-                padding: 0 20px;
-            }
-
-            .carousel-button {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .carousel-button:first-child::before {
-                content: '\2039';
-                color: #fff;
-            }
-
-            .carousel-button:last-child::before {
-                content: '\203A';
-                color: #fff;
-            }
-
-            .portfolio {
-                padding: 100px 40px 40px;
             }
         }
     </style>
 </head>
 <body>
-
     <header class="header">
         <h1 class="main-title">E N Y O</h1>
         <nav class="nav-links">
@@ -253,35 +148,26 @@
         </nav>
     </header>
 
-    <section class="portfolio">
-        <!-- Improved Carousel -->
-        <div class="carousel">
-            <div class="carousel-inner" id="carouselInner">
-                <!-- Carousel items will be dynamically added here -->
-            </div>
-            <div class="carousel-controls" id="carouselControls">
-                <!-- Dot indicators will be dynamically added here -->
-            </div>
+    <div class="carousel">
+        <div class="carousel-inner" id="carouselInner">
+            <!-- Carousel items will be dynamically added here -->
         </div>
+    </div>
 
-        <!-- Modal for full-size image/video -->
-        <div id="mediaModal" class="modal">
-            <span class="close">&times;</span>
-            <img class="modal-content" id="modalImage" style="display:none;">
-            <div class="modal-content video-container" id="modalVideo" style="display:none;">
-                <iframe frameborder="0" allowfullscreen></iframe>
-            </div>
+    <div id="mediaModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage" style="display:none;">
+        <div class="modal-content video-container" id="modalVideo" style="display:none;">
+            <iframe frameborder="0" allowfullscreen></iframe>
         </div>
-
-    </section>
+    </div>
 
     <footer>
-        <p>&copy; 2024 E N Y O | Built with <a href="https://www.netlify.com/">Netlify</a></p>
+        <p>&copy; 2024 E N Y O | Built with <a href="https://www.netlify.com/" style="color: #fff;">Netlify</a></p>
     </footer>
-    
+
     <script>
         const carouselInner = document.getElementById('carouselInner');
-        const carouselControls = document.getElementById('carouselControls');
         const modal = document.getElementById('mediaModal');
         const modalImg = document.getElementById('modalImage');
         const modalVideo = document.getElementById('modalVideo');
@@ -302,10 +188,9 @@
 
         let currentIndex = 0;
 
-        function createCarouselItem(item, index) {
+        function createCarouselItem(item) {
             const div = document.createElement('div');
             div.className = 'carousel-item';
-            div.dataset.index = index;
 
             if (item.type === 'image') {
                 const img = document.createElement('img');
@@ -323,57 +208,58 @@
                 div.appendChild(videoContainer);
             }
 
-            div.addEventListener('click', () => showModal(index));
+            div.addEventListener('click', () => showModal(item));
 
             return div;
         }
 
         function initializeCarousel() {
             carouselInner.innerHTML = '';
-            carouselControls.innerHTML = '';
             
-            carouselItems.forEach((item, index) => {
-                carouselInner.appendChild(createCarouselItem(item, index));
-                const dot = document.createElement('button');
-                dot.className = 'carousel-button';
-                dot.addEventListener('click', () => goToSlide(index));
-                carouselControls.appendChild(dot);
+            // Add last item to the beginning
+            carouselInner.appendChild(createCarouselItem(carouselItems[carouselItems.length - 1]));
+            
+            // Add all items
+            carouselItems.forEach(item => {
+                carouselInner.appendChild(createCarouselItem(item));
             });
+            
+            // Add first item to the end
+            carouselInner.appendChild(createCarouselItem(carouselItems[0]));
 
-            updateCarouselPosition();
+            updateCarouselPosition(false);
         }
 
-        function updateCarouselPosition() {
-            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
-            updateDotIndicators();
-        }
-
-        function updateDotIndicators() {
-            const dots = carouselControls.querySelectorAll('.carousel-button');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-        }
-
-        function goToSlide(index) {
-            currentIndex = index;
-            updateCarouselPosition();
+        function updateCarouselPosition(animate = true) {
+            carouselInner.style.transition = animate ? 'transform 0.5s ease' : 'none';
+            carouselInner.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
         }
 
         function moveCarousel(direction) {
-            currentIndex = (currentIndex + direction + carouselItems.length) % carouselItems.length;
+            currentIndex += direction;
             updateCarouselPosition();
+
+            if (direction === 1 && currentIndex === carouselItems.length) {
+                setTimeout(() => {
+                    currentIndex = 0;
+                    updateCarouselPosition(false);
+                }, 500);
+            } else if (direction === -1 && currentIndex === -1) {
+                setTimeout(() => {
+                    currentIndex = carouselItems.length - 1;
+                    updateCarouselPosition(false);
+                }, 500);
+            }
         }
 
-        function showModal(index) {
-            const currentItem = carouselItems[index];
-            if (currentItem.type === 'image') {
-                modalImg.src = currentItem.src;
+        function showModal(item) {
+            if (item.type === 'image') {
+                modalImg.src = item.src;
                 modalImg.style.display = 'block';
                 modalVideo.style.display = 'none';
             } else {
                 const iframe = modalVideo.querySelector('iframe');
-                iframe.src = `${currentItem.src}?autoplay=1`;
+                iframe.src = `${item.src}?autoplay=1`;
                 modalVideo.style.display = 'block';
                 modalImg.style.display = 'none';
             }
@@ -414,13 +300,12 @@
             }
         }
 
-        initializeCarousel();
-
-        // For desktop navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') moveCarousel(-1);
             if (e.key === 'ArrowRight') moveCarousel(1);
         });
+
+        initializeCarousel();
     </script>
 </body>
 </html>
