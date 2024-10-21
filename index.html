@@ -180,6 +180,8 @@
             width: 100%;
             height: 0;
             padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background-size: cover;
+            background-position: center;
         }
 
         .video-container iframe {
@@ -189,11 +191,32 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none;
         }
 
-        .modal .video-container iframe {
-            pointer-events: auto;
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .play-button::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-left: 20px solid white;
+            margin-left: 5px;
         }
 
         footer {
@@ -236,7 +259,7 @@
             /* Fullscreen video on mobile */
             .modal-content.video-container {
                 width: 100%;
-                height: auto;
+                height: 100%;
                 max-height: none;
                 padding-bottom: 0;
             }
@@ -244,6 +267,11 @@
             .video-container iframe {
                 width: 100vw;
                 height: 100vh;
+            }
+
+            .close {
+                top: 10px;
+                right: 10px;
             }
         }
     </style>
@@ -254,7 +282,7 @@
         <h1 class="main-title">E N Y O</h1>
         <nav class="nav-links">
             <a href="mailto:your-email@example.com">Contact</a>
-            <a href="https://www.instagram.com/your-instagram-handle/" target="_blank">Instagram</a>
+            <a href="https://www.instagram.com/jargal___16/" target="_blank">Instagram</a>
         </nav>
     </header>
 
@@ -287,102 +315,123 @@
     
 <script>
   const carouselInner = document.getElementById('carouselInner');
-        const modal = document.getElementById('mediaModal');
-        const modalImg = document.getElementById('modalImage');
-        const modalVideo = document.getElementById('modalVideo');
-        const closeModal = document.querySelector('.close');
+  const modal = document.getElementById('mediaModal');
+  const modalImg = document.getElementById('modalImage');
+  const modalVideo = document.getElementById('modalVideo');
+  const closeModal = document.querySelector('.close');
 
   const carouselItems = [
-            { type: 'image', src: 'https://i.ibb.co/BC1tFyB/7.jpg', alt: 'Image 1' },
-            { type: 'image', src: 'https://i.ibb.co/71sh3mH/4.jpg', alt: 'Image 2' },
-            { type: 'image', src: 'https://i.ibb.co/hBdnxg7/2.jpg', alt: 'Image 3' },
-            { type: 'image', src: 'https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 4' },
-            { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
-            { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
-            { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
-            { type: 'video', src: 'https://streamable.com/e/l2h9zt' },
-            { type: 'video', src: 'https://streamable.com/e/cr97g4' },
-            { type: 'video', src: 'https://streamable.com/e/dvk31c' }
-        ];
+    { type: 'image', src: 'https://i.ibb.co/BC1tFyB/7.jpg', alt: 'Image 1' },
+    { type: 'image', src: 'https://i.ibb.co/71sh3mH/4.jpg', alt: 'Image 2' },
+    { type: 'image', src: 'https://i.ibb.co/hBdnxg7/2.jpg', alt: 'Image 3' },
+    { type: 'image', src: 'https://i.ibb.co/Bc7wzJj/456334638-434892266243399-3749211461804743679-n.jpg', alt: 'Image 4' },
+    { type: 'image', src: 'https://i.ibb.co/9tkS1FX/6.jpg', alt: 'Image 5' },
+    { type: 'image', src: 'https://i.ibb.co/HC1249H/5.jpg', alt: 'Image 6' },
+    { type: 'image', src: 'https://i.ibb.co/f9ZmWX7/3.jpg', alt: 'Image 7' },
+    { type: 'video', src: 'https://streamable.com/e/l2h9zt', thumbnail: 'https://i.ibb.co/BC1tFyB/7.jpg' },
+    { type: 'video', src: 'https://streamable.com/e/cr97g4', thumbnail: 'https://i.ibb.co/71sh3mH/4.jpg' },
+    { type: 'video', src: 'https://streamable.com/e/dvk31c', thumbnail: 'https://i.ibb.co/hBdnxg7/2.jpg' }
+  ];
 
-        function createCarouselItem(item) {
-            const div = document.createElement('div');
-            div.classList.add('carousel-item');
+  function createCarouselItem(item) {
+    const div = document.createElement('div');
+    div.classList.add('carousel-item');
 
-            if (item.type === 'image') {
-                const img = document.createElement('img');
-                img.src = item.src;
-                img.alt = item.alt;
-                div.appendChild(img);
-                div.addEventListener('click', () => showModal('image', item.src));
-            } else if (item.type === 'video') {
-                const videoContainer = document.createElement('div');
-                videoContainer.classList.add('video-container');
-                const iframe = document.createElement('iframe');
-                iframe.src = item.src;
-                videoContainer.appendChild(iframe);
-                div.appendChild(videoContainer);
-                div.addEventListener('click', () => showModal('video', item.src));
-            }
+    if (item.type === 'image') {
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = item.alt;
+      div.appendChild(img);
+      div.addEventListener('click', () => showModal('image', item.src));
+    } else if (item.type === 'video') {
+      const videoContainer = document.createElement('div');
+      videoContainer.classList.add('video-container');
+      videoContainer.style.backgroundImage = `url(${item.thumbnail})`;
+      const playButton = document.createElement('div');
+      playButton.classList.add('play-button');
+      videoContainer.appendChild(playButton);
+      div.appendChild(videoContainer);
+      div.addEventListener('click', () => showModal('video', item.src));
+    }
 
-            return div;
-        }
+    return div;
+  }
 
-        function populateCarousel() {
-            carouselItems.forEach(item => {
-                carouselInner.appendChild(createCarouselItem(item));
-            });
-        }
+  function populateCarousel() {
+    carouselItems.forEach(item => {
+      carouselInner.appendChild(createCarouselItem(item));
+    });
+  }
 
-        function showModal(type, src) {
-            if (type === 'image') {
-                modalImg.src = src;
-                modalImg.style.display = 'block';
-                modalVideo.style.display = 'none';
-            } else if (type === 'video') {
-                modalVideo.querySelector('iframe').src = src;
-                modalImg.style.display = 'none';
-                modalVideo.style.display = 'block';
-            }
-            modal.style.display = 'flex';
-        }
+  function showModal(type, src) {
+    if (type === 'image') {
+      modalImg.src = src;
+      modalImg.style.display = 'block';
+      modalVideo.style.display = 'none';
+    } else if (type === 'video') {
+      modalVideo.querySelector('iframe').src = src;
+      modalImg.style.display = 'none';
+      modalVideo.style.display = 'block';
+    }
+    modal.style.display = 'flex';
 
-        function hideModal() {
-            modal.style.display = 'none';
-            modalVideo.querySelector('iframe').src = '';
-        }
+    // Request fullscreen on mobile devices
+    if (window.innerWidth <= 768 && type === 'video') {
+      if (modalVideo.requestFullscreen) {
+        modalVideo.requestFullscreen();
+      } else if (modalVideo.webkitRequestFullscreen) { // Safari
+        modalVideo.webkitRequestFullscreen();
+      } else if (modalVideo.msRequestFullscreen) { // IE11
+        modalVideo.msRequestFullscreen();
+      }
+    }
+  }
 
-        closeModal.addEventListener('click', hideModal);
+  function hideModal() {
+    modal.style.display = 'none';
+    modalVideo.querySelector('iframe').src = '';
 
-        // Carousel Navigation
-        let currentIndex = 0;
-        const itemsToShow = window.innerWidth <= 768 ? 1 : 3;
+    // Exit fullscreen
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { // Safari
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // IE11
+      document.msExitFullscreen();
+    }
+  }
 
-        function updateCarouselPosition() {
-            const itemWidth = carouselInner.firstElementChild.clientWidth;
-            carouselInner.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-        }
+  closeModal.addEventListener('click', hideModal);
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            if (currentIndex < carouselItems.length - itemsToShow) {
-                currentIndex++;
-                updateCarouselPosition();
-            }
-        });
+  // Carousel Navigation
+  let currentIndex = 0;
+  const itemsToShow = window.innerWidth <= 768 ? 1 : 3;
 
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarouselPosition();
-            }
-        });
+  function updateCarouselPosition() {
+    const itemWidth = carouselInner.firstElementChild.clientWidth;
+    carouselInner.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+  }
 
-        window.addEventListener('resize', updateCarouselPosition);
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (currentIndex < carouselItems.length - itemsToShow) {
+      currentIndex++;
+      updateCarouselPosition();
+    }
+  });
 
-        // Initialize carousel
-        populateCarousel();
-        updateCarouselPosition();
-    </script>
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarouselPosition();
+    }
+  });
+
+  window.addEventListener('resize', updateCarouselPosition);
+
+  // Initialize carousel
+  populateCarousel();
+  updateCarouselPosition();
+</script>
 
 </body>
 </html>
