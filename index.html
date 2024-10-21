@@ -1,4 +1,4 @@
-<div><br class="Apple-interchange-newline"><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -99,11 +99,13 @@
             transition: transform 0.3s ease;
         }
         
-  @media (min-width: 768px) {
+        @media (min-width: 768px) {
             .header {
                 flex-direction: row;
                 justify-content: space-between;
             }
+        }
+
         .carousel-item:hover img,
         .carousel-item:hover .video-container {
             transform: scale(1.05);
@@ -321,17 +323,17 @@
         }
 
         function initializeCarousel() {
+            // Add clones for infinite effect
+            for (let i = carouselItems.length - 3; i < carouselItems.length; i++) {
+                carouselInner.appendChild(createCarouselItem(carouselItems[i]));
+            }
             // Add main items
             carouselItems.forEach(item => {
                 carouselInner.appendChild(createCarouselItem(item));
             });
-
-            // Add clones for infinite effect
+            // Add more clones
             for (let i = 0; i < 3; i++) {
                 carouselInner.appendChild(createCarouselItem(carouselItems[i]));
-            }
-            for (let i = carouselItems.length - 3; i < carouselItems.length; i++) {
-                carouselInner.insertBefore(createCarouselItem(carouselItems[i]), carouselInner.firstChild);
             }
 
             showCurrentItems();
@@ -365,35 +367,37 @@
         }
 
         document.getElementById('prevBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            currentIndex--;
             showCurrentItems();
             handleInfiniteScroll();
         });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % carouselItems.length;
+            currentIndex++;
             showCurrentItems();
             handleInfiniteScroll();
         });
 
         function handleInfiniteScroll() {
-            if (currentIndex === -1) {
+            if (currentIndex < 0) {
                 setTimeout(() => {
                     carouselInner.style.transition = 'none';
                     currentIndex = carouselItems.length - 1;
                     showCurrentItems();
+                    setTimeout(() => {
+                        carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
+                    }, 50);
                 }, 500);
-            } else if (currentIndex === carouselItems.length) {
+            } else if (currentIndex >= carouselItems.length) {
                 setTimeout(() => {
                     carouselInner.style.transition = 'none';
                     currentIndex = 0;
                     showCurrentItems();
+                    setTimeout(() => {
+                        carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
+                    }, 50);
                 }, 500);
             }
-
-            setTimeout(() => {
-                carouselInner.style.transition = 'transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-            }, 510);
         }
 
         carouselInner.addEventListener('click', (e) => {
@@ -411,8 +415,6 @@
             }
         });
 
-
-
         // Adjust carousel for mobile
         function adjustCarousel() {
             const itemWidth = window.innerWidth <= 768 ? 100 : 100 / 3;
@@ -421,34 +423,72 @@
             });
             showCurrentItems();
         }
-         // Handle touch events for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
 
-        carouselInner.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
+        // Handle touch events for mobile
+      
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-        carouselInner.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
+    carouselInner.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
 
-        function handleSwipe() {
-            if (touchEndX < touchStartX) {
-                // Swipe left
-                currentIndex = (currentIndex + 1) % carouselItems.length;
-            }
-            if (touchEndX > touchStartX) {
-                // Swipe right
-                currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
-            }
-            showCurrentItem();
+    carouselInner.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+        if (touchEndX < touchStartX) {
+            // Swipe left
+            currentIndex++;
         }
+        if (touchEndX > touchStartX) {
+            // Swipe right
+            currentIndex--;
+        }
+        showCurrentItems();
+        handleInfiniteScroll();
+    }
 
-        window.addEventListener('resize', adjustCarousel);
-        initializeCarousel();
-        adjustCarousel();
-    </script>
+    window.addEventListener('resize', adjustCarousel);
+    
+    // Initialize the carousel
+    initializeCarousel();
+    adjustCarousel();
+
+    // Auto-play functionality
+    let autoplayInterval;
+
+    function startAutoplay() {
+        autoplayInterval = setInterval(() => {
+            currentIndex++;
+            showCurrentItems();
+            handleInfiniteScroll();
+        }, 5000); // Change slide every 5 seconds
+    }
+
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
+    }
+
+    // Start autoplay when the page loads
+    startAutoplay();
+
+    // Pause autoplay when user interacts with the carousel
+    carouselInner.addEventListener('mouseenter', stopAutoplay);
+    carouselInner.addEventListener('touchstart', stopAutoplay);
+
+    // Resume autoplay when user stops interacting
+    carouselInner.addEventListener('mouseleave', startAutoplay);
+    carouselInner.addEventListener('touchend', startAutoplay);
+
+    // Additional event listeners for buttons to pause autoplay
+    document.getElementById('prevBtn').addEventListener('mouseenter', stopAutoplay);
+    document.getElementById('nextBtn').addEventListener('mouseenter', stopAutoplay);
+    document.getElementById('prevBtn').addEventListener('mouseleave', startAutoplay);
+    document.getElementById('nextBtn').addEventListener('mouseleave', startAutoplay);
+</script>
+
 </body>
-</html></div>
+</html>
